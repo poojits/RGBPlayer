@@ -80,19 +80,4 @@ public class Image {
     public BufferedImage getImg() {
         return this.img;
     }
-
-    public void imshow() {
-        JFrame frame = new JFrame();
-        JLabel label = new JLabel(new ImageIcon(this.img));
-        frame.getContentPane().add(label, BorderLayout.CENTER);
-        frame.pack();
-        frame.setVisible(true);
-    }
-
-    public void imshow(JFrame frame) {
-        JLabel label = new JLabel(new ImageIcon(img));
-        frame.getContentPane().add(label, BorderLayout.CENTER);
-        frame.pack();
-        frame.setVisible(true);
-    }
 }

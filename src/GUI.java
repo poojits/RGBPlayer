@@ -1,4 +1,3 @@
-package cs576;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package cs576;
+
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class RGBPlayer {
     }
 
     private static void parseParameters(String[] args) {
-        String menu = "Usage: RGBPlayer <filename> <scaleW> <scaleH> <fps> <anti-aliasing> <analysis>\n"
+        String menu = "Usage: java -Xmx1024m RGBPlayer <filename> <scaleW> <scaleH> <fps> <anti-aliasing> <analysis>\n"
                 + "   <filename>\t\tPath to the *.rgb video file\n"
                 + "   <scaleW>\t\tScaling factor for width\n"
                 + "   <scaleH>\t\tScaling factor for height\n"

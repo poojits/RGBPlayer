@@ -1,6 +1,5 @@
-
-
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 
 public class RGBPlayer {
@@ -36,8 +35,29 @@ public class RGBPlayer {
         ArrayList<BufferedImage> video = new ArrayList<BufferedImage>();
         int frameCount = 1;
         int totalFrames = cap.getNumFrames();
+        if (scaleH > 1 && scaleW > 1 && analysis == 2) {
+            System.out.println("Only reduction is possible with Seam Carving");
+            System.exit(1);
+        }
         while (cap.read(original_frame)) {
-            if (isScaled) {
+            if (isScaled && analysis == 2) {
+                ImageSeamOperations s = new ImageSeamOperations(original_frame.getImg());
+                int reduceHeight = original_height - modified_height;
+                int reduceWidth = original_width - modified_width;
+                int steps = Math.max(modified_height, modified_width);
+                for (int k = 0; k < steps; k++) {
+                    if (reduceHeight > 0) {
+                        s.carveHorizontalSeam();
+                        reduceHeight--;
+                    }
+                    if (reduceWidth > 0) {
+                        s.carveVerticalSeam();
+                        reduceWidth--;
+                    }
+                }
+                WritableRaster raster = s.getImg().copyData(null);
+                video.add(new BufferedImage(s.getImg().getColorModel(), raster, false, null));
+            } else if (isScaled && analysis != 2) {
                 Image.resize(original_frame, modified_frame, scaleW, scaleH, antiAliasing, analysis);
                 video.add(modified_frame.clone());
             } else {

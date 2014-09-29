@@ -1,6 +1,9 @@
 package cs576;
 
+import com.sun.corba.se.spi.ior.Writeable;
+
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.*;
 
 /**
@@ -33,6 +36,11 @@ public class Image {
         this.colorModel = colorModel;
         this.data = new byte[this.width * this.height * 3];
         this.img = new BufferedImage(this.width, this.height, this.colorModel);
+    }
+
+    public BufferedImage clone() {
+        WritableRaster raster = this.img.copyData(null);
+        return new BufferedImage(this.img.getColorModel(),raster,false,null);
     }
 
     private void getDataFromFile(String filename) {

@@ -1,6 +1,7 @@
 package cs576;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class RGBPlayer {
     private static String filename = "";
@@ -31,14 +32,17 @@ public class RGBPlayer {
             System.err.println("Cannot start VideoCapture: " + filename);
             System.exit(1);
         }
+        ArrayList<BufferedImage> video = new ArrayList<BufferedImage>();
         while (cap.read(original_frame)) {
-            if(isScaled) {
-                Image.resize(original_frame,modified_frame,scaleW,scaleH);
-                gui.imshow(modified_frame);
+            if (isScaled) {
+                Image.resize(original_frame, modified_frame, scaleW, scaleH);
+                video.add(modified_frame.clone());
+            } else {
+                video.add(original_frame.clone());
             }
-            else {
-                gui.imshow(original_frame);
-            }
+        }
+        for(int i=0;i<video.size();i++){
+            gui.imshow(video.get(i));
             try {
                 long sleep = (long) Math.floor((double) 1000 / fps);
                 Thread.sleep(sleep);

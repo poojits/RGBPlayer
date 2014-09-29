@@ -24,6 +24,8 @@ public class Image {
         this.width = width;
         this.height = height;
         this.colorModel = colorModel;
+        this.data = new byte[this.width*this.height*3];
+        this.img = new BufferedImage(this.width, this.height, this.colorModel);
         setBufferedImage(filename);
     }
 
@@ -31,6 +33,8 @@ public class Image {
         this.width = width;
         this.height = height;
         this.colorModel = colorModel;
+        this.data = new byte[this.width*this.height*3];
+        this.img = new BufferedImage(this.width, this.height, this.colorModel);
     }
 
     private void getDataFromFile(String filename) {
@@ -39,7 +43,6 @@ public class Image {
             InputStream is = new FileInputStream(file);
 
             this.length = (int) file.length();
-            this.data = new byte[this.length];
 
             int offset = 0;
             int numRead = 0;
@@ -54,7 +57,6 @@ public class Image {
     }
 
     public void setBufferedImage(byte[] data) {
-        this.img = new BufferedImage(this.width, this.height, this.colorModel);
         this.data = data;
         int idx = 0;
         for (int y = 0; y < this.height; y++) {
@@ -72,7 +74,6 @@ public class Image {
     }
 
     public void setBufferedImage(String filename) {
-        this.img = new BufferedImage(this.width, this.height, this.colorModel);
         getDataFromFile(filename);
         setBufferedImage(this.data);
     }

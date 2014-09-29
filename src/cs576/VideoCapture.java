@@ -15,7 +15,7 @@ public class VideoCapture {
     private int numFrames;
     private int oneFrameDataLength;
     private InputStream is;
-    private int framesRead = 0;
+    private byte[] frameData;
     private String filename;
     private boolean isOpened = false;
 
@@ -27,21 +27,37 @@ public class VideoCapture {
         this.filename = filename;
     }
 
-    public Image read() {
+    public boolean grabFrame() {
         int offset = 0;
         int numRead = 0;
-        byte[] data = new byte[this.oneFrameDataLength];
+        this.frameData = new byte[this.oneFrameDataLength];
         try {
-            while (offset < data.length &&
-                    (numRead = this.is.read(data, offset, data.length - offset)) >= 0) {
+            while (offset < this.frameData.length &&
+                    (numRead = this.is.read(this.frameData, offset, this.frameData.length - offset)) >= 0) {
                 offset += numRead;
             }
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
-        Image frame = new Image(this.width,this.height,BufferedImage.TYPE_INT_RGB);
-        frame.setBufferedImage(data);
-        return frame;
+        if(numRead>0)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean retrieveFrame(Image frame) {
+        frame.setBufferedImage(this.frameData);
+        return true;
+    }
+
+    public boolean read(Image img) {
+        if(grabFrame()) {
+            return retrieveFrame(img);
+        }
+        else {
+            return false;
+        }
     }
 
     public void open() {

@@ -3,8 +3,19 @@ package cs576;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 
-public class App {
+public class RGBPlayer {
     public static void main(String[] args) {
+        String menu = "Usage: RGBPlayer <filename> <scaleW> <scaleH> <fps> <anti-aliasing> <analysis>\n"
+                +"   <filename>\t\tPath to the *.rgb video file\n"
+                +"   <scaleW>\t\tScaling factor for width\n"
+                +"   <scaleH>\t\tScaling factor for height\n"
+                +"   <fps>\t\tOutput frame rate of the video\n"
+                +"   <anti-aliasing>\tSwitch to turn anti-aliasing on or off (default 0)\n"
+                +"   <analysis>\t\tAnalysis and Extra credit (default 0)";
+        if(args.length<5 || args.length>7) {
+            System.out.println(menu);
+            System.exit(1);
+        }
         String filename = args[0];
         /*int width = Integer.parseInt(args[1]);
         int height = Integer.parseInt(args[2]);*/

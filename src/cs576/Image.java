@@ -1,7 +1,5 @@
 package cs576;
 
-import com.sun.corba.se.spi.ior.Writeable;
-
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.io.*;
@@ -38,9 +36,19 @@ public class Image {
         this.img = new BufferedImage(this.width, this.height, this.colorModel);
     }
 
+    public static void resize(Image src, Image dst, float scaleW, float scaleH) {
+        for (int y = 0; y < dst.height(); y++) {
+            for (int x = 0; x < dst.width(); x++) {
+                int[] rgb = src.getRGB((int) Math.floor(x / scaleW), (int) Math.floor(y / scaleH));
+                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
+                dst.setRGB(x, y, pix);
+            }
+        }
+    }
+
     public BufferedImage clone() {
         WritableRaster raster = this.img.copyData(null);
-        return new BufferedImage(this.img.getColorModel(),raster,false,null);
+        return new BufferedImage(this.img.getColorModel(), raster, false, null);
     }
 
     private void getDataFromFile(String filename) {
@@ -97,29 +105,19 @@ public class Image {
     }
 
     public void setRGB(int x, int y, int pix) {
-        this.img.setRGB(x,y,pix);
+        this.img.setRGB(x, y, pix);
     }
 
-    public int[] getRGB(int x,int y){
+    public int[] getRGB(int x, int y) {
         int xx = x;
         int yy = y;
-        if(x>=this.width) xx--;
-        if(y>=this.height) yy--;
+        if (x >= this.width) xx--;
+        if (y >= this.height) yy--;
         int[] rgb = new int[3];
-        int pix = this.img.getRGB(xx,yy);
+        int pix = this.img.getRGB(xx, yy);
         rgb[0] = (pix >> 16) & 0xff;
         rgb[1] = (pix >> 8) & 0xff;
         rgb[2] = (pix & 0xff);
         return rgb;
-    }
-
-    public static void resize(Image src, Image dst, float scaleW, float scaleH) {
-        for (int y = 0; y < dst.height(); y++) {
-            for (int x = 0; x < dst.width(); x++) {
-                int[] rgb = src.getRGB((int) Math.floor(x/scaleW),(int) Math.floor(y/scaleH));
-                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
-                dst.setRGB(x,y,pix);
-            }
-        }
     }
 }

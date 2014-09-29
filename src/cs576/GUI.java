@@ -23,6 +23,7 @@ public class GUI {
         this.label.setIcon(new ImageIcon(img.getImg()));
         window.pack();
     }
+
     public void imshow(BufferedImage img) {
         this.label.setIcon(new ImageIcon(img));
         window.pack();

@@ -19,7 +19,7 @@ public class RGBPlayer {
         int modified_width = original_width;
         int modified_height = original_height;
         boolean isScaled = false;
-        if(scaleW != 1.0 || scaleH != 1.0) {
+        if (scaleW != 1.0 || scaleH != 1.0) {
             modified_width = (int) Math.floor(scaleW * original_width);
             modified_height = (int) Math.floor(scaleH * original_height);
             isScaled = true;
@@ -41,7 +41,7 @@ public class RGBPlayer {
                 video.add(original_frame.clone());
             }
         }
-        for(int i=0;i<video.size();i++){
+        for (int i = 0; i < video.size(); i++) {
             gui.imshow(video.get(i));
             try {
                 long sleep = (long) Math.floor((double) 1000 / fps);

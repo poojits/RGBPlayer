@@ -10,7 +10,6 @@ public class VideoCapture {
     private int height;
     private int width;
     private int colorModel;
-    private float fps;
     private int length;
     private int numFrames;
     private int oneFrameDataLength;
@@ -22,7 +21,6 @@ public class VideoCapture {
     public VideoCapture(String filename) {
         this.width = 352;
         this.height = 288;
-        this.fps = 30;
         this.colorModel = BufferedImage.TYPE_INT_RGB;
         this.filename = filename;
     }

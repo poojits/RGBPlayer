@@ -40,7 +40,7 @@ public class VideoCapture {
             e.printStackTrace();
             return false;
         }
-        if(numRead>0)
+        if (numRead > 0)
             return true;
         else
             return false;
@@ -52,10 +52,9 @@ public class VideoCapture {
     }
 
     public boolean read(Image img) {
-        if(grabFrame()) {
+        if (grabFrame()) {
             return retrieveFrame(img);
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -70,8 +69,8 @@ public class VideoCapture {
             e.printStackTrace();
         }
         this.length = (int) file.length();
-        this.oneFrameDataLength = this.height*this.width*3;
-        this.numFrames = this.length/oneFrameDataLength;
+        this.oneFrameDataLength = this.height * this.width * 3;
+        this.numFrames = this.length / oneFrameDataLength;
         isOpened = true;
     }
 

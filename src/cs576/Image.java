@@ -1,7 +1,5 @@
 package cs576;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
@@ -24,7 +22,7 @@ public class Image {
         this.width = width;
         this.height = height;
         this.colorModel = colorModel;
-        this.data = new byte[this.width*this.height*3];
+        this.data = new byte[this.width * this.height * 3];
         this.img = new BufferedImage(this.width, this.height, this.colorModel);
         setBufferedImage(filename);
     }
@@ -33,7 +31,7 @@ public class Image {
         this.width = width;
         this.height = height;
         this.colorModel = colorModel;
-        this.data = new byte[this.width*this.height*3];
+        this.data = new byte[this.width * this.height * 3];
         this.img = new BufferedImage(this.width, this.height, this.colorModel);
     }
 

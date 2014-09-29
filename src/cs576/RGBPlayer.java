@@ -13,17 +13,20 @@ public class RGBPlayer {
     public static void main(String[] args) {
         parseParameters(args);
         GUI gui = new GUI();
-        VideoCapture cap = new VideoCapture(filename);
-        Image frame = new Image(352, 288, BufferedImage.TYPE_INT_RGB);
+        int original_width = 352;
+        int original_height = 288;
+        VideoCapture cap = new VideoCapture(filename, original_width, original_height);
+        Image original_frame = new Image(original_width, original_height, BufferedImage.TYPE_INT_RGB);
         cap.open();
         if (!cap.isOpened()) {
             System.err.println("Cannot start VideoCapture: " + filename);
             System.exit(1);
         }
-        while (cap.read(frame)) {
-            gui.imshow(frame);
+        while (cap.read(original_frame)) {
+            gui.imshow(original_frame);
             try {
-                Thread.sleep(33);
+                long sleep = (long) Math.floor((double) 1000 / fps);
+                Thread.sleep(sleep);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

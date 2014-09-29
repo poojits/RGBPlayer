@@ -18,9 +18,9 @@ public class VideoCapture {
     private String filename;
     private boolean isOpened = false;
 
-    public VideoCapture(String filename) {
-        this.width = 352;
-        this.height = 288;
+    public VideoCapture(String filename, int width, int height) {
+        this.width = width;
+        this.height = height;
         this.colorModel = BufferedImage.TYPE_INT_RGB;
         this.filename = filename;
     }

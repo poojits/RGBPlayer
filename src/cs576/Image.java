@@ -104,33 +104,12 @@ public class Image {
         rgb[2] = (pix & 0xff);
         return rgb;
     }
-    
+
     public static void resize(Image src, Image dst, float scaleW, float scaleH) {
         for (int y = 0; y < dst.height(); y++) {
             for (int x = 0; x < dst.width(); x++) {
-                int[] floorXfloorY = src.getRGB((int) Math.floor(x/scaleW),(int) Math.floor(y/scaleH));
-                int[] floorXceilY = src.getRGB((int) Math.floor(x/scaleW),(int) Math.ceil(y/scaleH));
-                int[] ceilXfloorY = src.getRGB((int) Math.ceil(x/scaleW),(int) Math.floor(y/scaleH));
-                int[] ceilXceilY = src.getRGB((int) Math.ceil(x/scaleW),(int) Math.ceil(y/scaleH));
-
-                double wx1 = (Math.ceil(x/scaleW) - x/scaleW)/(Math.ceil(x/scaleW)-Math.floor(x/scaleW));
-                double wx2 = (x/scaleW - Math.floor(x/scaleW))/(Math.ceil(x/scaleW)-Math.floor(x/scaleW));
-
-                double R1_r = wx1*floorXfloorY[0] + wx2*ceilXfloorY[0];
-                double R1_g = wx1*floorXfloorY[1] + wx2*ceilXfloorY[1];
-                double R1_b = wx1*floorXfloorY[2] + wx2*ceilXfloorY[2];
-
-                double R2_r = wx1*floorXceilY[0] + wx2*ceilXceilY[0];
-                double R2_g = wx1*floorXceilY[1] + wx2*ceilXceilY[1];
-                double R2_b = wx1*floorXceilY[2] + wx2*ceilXceilY[2];
-
-                double wy1 = (Math.ceil(y/scaleH) - y/scaleH)/(Math.ceil(y/scaleH)-Math.floor(y/scaleH));
-                double wy2 = (y/scaleH - Math.floor(y/scaleH))/(Math.ceil(y/scaleH)-Math.floor(y/scaleH));
-
-                int r = (int) Math.floor(wy1*R1_r + wy2*R2_r);
-                int g = (int) Math.floor(wy1*R1_g + wy2*R2_g);
-                int b = (int) Math.floor(wy1*R1_b + wy2*R2_b);
-                int pix = 0xff000000 | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
+                int[] rgb = src.getRGB((int) Math.floor(x/scaleW),(int) Math.floor(y/scaleH));
+                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
                 dst.setRGB(x,y,pix);
             }
         }

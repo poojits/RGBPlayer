@@ -35,3 +35,7 @@ Changes the scale as specified and performs non-linear mapping with anti-aliasin
 ```
 java -Xmx1024m RGBPlayer ../../../resources/Video1.rgb 2 1 30 1 1
 ```
+Changes the scale as specified and performs seam-carving mapping
+```
+java -Xmx1024m RGBPlayer ../../../resources/Video1.rgb 0.5 0.5 30 0 1
+```

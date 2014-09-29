@@ -33,13 +33,17 @@ public class RGBPlayer {
             System.exit(1);
         }
         ArrayList<BufferedImage> video = new ArrayList<BufferedImage>();
+        int frameCount = 1;
+        int totalFrames = cap.getNumFrames();
         while (cap.read(original_frame)) {
             if (isScaled) {
-                Image.resize(original_frame, modified_frame, scaleW, scaleH);
+                Image.resize(original_frame, modified_frame, scaleW, scaleH, antiAliasing);
                 video.add(modified_frame.clone());
             } else {
                 video.add(original_frame.clone());
             }
+            System.out.println("Processing (" + frameCount + "/" + totalFrames + ")...Please Wait");
+            frameCount++;
         }
         for (int i = 0; i < video.size(); i++) {
             gui.imshow(video.get(i));

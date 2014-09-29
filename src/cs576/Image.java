@@ -36,14 +36,120 @@ public class Image {
         this.img = new BufferedImage(this.width, this.height, this.colorModel);
     }
 
-    public static void resize(Image src, Image dst, float scaleW, float scaleH) {
-        for (int y = 0; y < dst.height(); y++) {
-            for (int x = 0; x < dst.width(); x++) {
-                int[] rgb = src.getRGB((int) Math.floor(x / scaleW), (int) Math.floor(y / scaleH));
-                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
-                dst.setRGB(x, y, pix);
+    public static void resize(Image src, Image dst, float scaleW, float scaleH, int anti_aliasing) {
+        if (anti_aliasing == 0) {
+            for (int y = 0; y < dst.height(); y++) {
+                for (int x = 0; x < dst.width(); x++) {
+                    int[] rgb = src.getRGB((int) Math.floor(x / scaleW), (int) Math.floor(y / scaleH));
+                    int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
+                    dst.setRGB(x, y, pix);
+                }
+            }
+        } else {
+            for (int y = 0; y < dst.height(); y++) {
+                for (int x = 0; x < dst.width(); x++) {
+                    int src_X = (int) Math.floor(x / scaleW);
+                    int src_Y = (int) Math.floor(y / scaleH);
+                    int[] averageXY = src.getAverageRGB(src_X, src_Y);
+                    int pix = 0xff000000 | ((averageXY[0] & 0xff) << 16) | ((averageXY[1] & 0xff) << 8) | (averageXY[2] & 0xff);
+                    dst.setRGB(x, y, pix);
+                }
             }
         }
+    }
+
+    private int[] getAverageRGB(int x, int y) {
+        float[] rgb = new float[3];
+        rgb[0] = 0;
+        rgb[1] = 0;
+        rgb[2] = 0;
+        if (x > 0 && y > 0 && x < this.width - 1 && y < this.height - 1) {
+            for (int i = x - 1; i <= x + 1; i++) {
+                for (int j = y - 1; j <= y + 1; j++) {
+                    int[] points = this.getRGB(i, j);
+                    for (int c = 0; c < 3; c++) {
+                        rgb[c] += points[c] / 9.0f;
+                    }
+                }
+            }
+        } else if (x == 0 && y == 0) {
+            for (int i = 0; i <= 1; i++) {
+                for (int j = 0; j <= 1; j++) {
+                    int[] points = this.getRGB(i, j);
+                    for (int c = 0; c < 3; c++) {
+                        rgb[c] += points[c] / 4.0f;
+                    }
+                }
+            }
+        } else if (x == 0 && y == this.height - 1) {
+            for (int i = 0; i <= 1; i++) {
+                for (int j = y - 1; j <= y; j++) {
+                    int[] points = this.getRGB(i, j);
+                    for (int c = 0; c < 3; c++) {
+                        rgb[c] += points[c] / 4.0f;
+                    }
+                }
+            }
+        } else if (x == this.width - 1 && y == 0) {
+            for (int i = x - 1; i <= x; i++) {
+                for (int j = 0; j <= 1; j++) {
+                    int[] points = this.getRGB(i, j);
+                    for (int c = 0; c < 3; c++) {
+                        rgb[c] += points[c] / 4.0f;
+                    }
+                }
+            }
+        } else if (x == this.width - 1 && y == this.height - 1) {
+            for (int i = x - 1; i <= x; i++) {
+                for (int j = y - 1; j <= y; j++) {
+                    int[] points = this.getRGB(i, j);
+                    for (int c = 0; c < 3; c++) {
+                        rgb[c] += points[c] / 4.0f;
+                    }
+                }
+            }
+        } else if (x == 0) {
+            for (int i = 0; i <= 1; i++) {
+                for (int j = y - 1; j <= y + 1; j++) {
+                    int[] points = this.getRGB(i, j);
+                    for (int c = 0; c < 3; c++) {
+                        rgb[c] += points[c] / 6.0f;
+                    }
+                }
+            }
+        } else if (y == 0) {
+            for (int i = x - 1; i <= x + 1; i++) {
+                for (int j = 0; j <= 1; j++) {
+                    int[] points = this.getRGB(i, j);
+                    for (int c = 0; c < 3; c++) {
+                        rgb[c] += points[c] / 6.0f;
+                    }
+                }
+            }
+        } else if (x == this.width - 1) {
+            for (int i = x - 1; i <= x; i++) {
+                for (int j = y - 1; j <= y + 1; j++) {
+                    int[] points = this.getRGB(i, j);
+                    for (int c = 0; c < 3; c++) {
+                        rgb[c] += points[c] / 6.0f;
+                    }
+                }
+            }
+        } else if (y == this.height - 1) {
+            for (int i = x - 1; i <= x + 1; i++) {
+                for (int j = y - 1; j <= y; j++) {
+                    int[] points = this.getRGB(i, j);
+                    for (int c = 0; c < 3; c++) {
+                        rgb[c] += points[c] / 6.0f;
+                    }
+                }
+            }
+        }
+        int[] rgbInt = new int[3];
+        rgbInt[0] = (int) Math.floor(rgb[0]);
+        rgbInt[1] = (int) Math.floor(rgb[1]);
+        rgbInt[2] = (int) Math.floor(rgb[2]);
+        return rgbInt;
     }
 
     public BufferedImage clone() {

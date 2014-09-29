@@ -27,6 +27,7 @@ public class RGBPlayer {
         VideoCapture cap = new VideoCapture(filename, original_width, original_height);
         Image original_frame = new Image(original_width, original_height, BufferedImage.TYPE_INT_RGB);
         Image modified_frame = new Image(modified_width, modified_height, BufferedImage.TYPE_INT_RGB);
+
         cap.open();
         if (!cap.isOpened()) {
             System.err.println("Cannot start VideoCapture: " + filename);
@@ -37,7 +38,7 @@ public class RGBPlayer {
         int totalFrames = cap.getNumFrames();
         while (cap.read(original_frame)) {
             if (isScaled) {
-                Image.resize(original_frame, modified_frame, scaleW, scaleH, antiAliasing);
+                Image.resize(original_frame, modified_frame, scaleW, scaleH, antiAliasing, analysis);
                 video.add(modified_frame.clone());
             } else {
                 video.add(original_frame.clone());

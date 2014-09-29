@@ -36,23 +36,161 @@ public class Image {
         this.img = new BufferedImage(this.width, this.height, this.colorModel);
     }
 
-    public static void resize(Image src, Image dst, float scaleW, float scaleH, int anti_aliasing) {
-        if (anti_aliasing == 0) {
-            for (int y = 0; y < dst.height(); y++) {
-                for (int x = 0; x < dst.width(); x++) {
-                    int[] rgb = src.getRGB((int) Math.floor(x / scaleW), (int) Math.floor(y / scaleH));
-                    int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
-                    dst.setRGB(x, y, pix);
+    public static void resize(Image src, Image dst, float scaleW, float scaleH, int anti_aliasing, int analysis) {
+        if (analysis == 0) {
+            if (anti_aliasing == 0) {
+                for (int y = 0; y < dst.height(); y++) {
+                    for (int x = 0; x < dst.width(); x++) {
+                        int[] rgb = src.getRGB((int) Math.floor(x / scaleW), (int) Math.floor(y / scaleH));
+                        int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
+                        dst.setRGB(x, y, pix);
+                    }
+                }
+            } else {
+                for (int y = 0; y < dst.height(); y++) {
+                    for (int x = 0; x < dst.width(); x++) {
+                        int src_X = (int) Math.floor(x / scaleW);
+                        int src_Y = (int) Math.floor(y / scaleH);
+                        int[] averageXY = src.getAverageRGB(src_X, src_Y);
+                        int pix = 0xff000000 | ((averageXY[0] & 0xff) << 16) | ((averageXY[1] & 0xff) << 8) | (averageXY[2] & 0xff);
+                        dst.setRGB(x, y, pix);
+                    }
                 }
             }
-        } else {
-            for (int y = 0; y < dst.height(); y++) {
-                for (int x = 0; x < dst.width(); x++) {
-                    int src_X = (int) Math.floor(x / scaleW);
-                    int src_Y = (int) Math.floor(y / scaleH);
-                    int[] averageXY = src.getAverageRGB(src_X, src_Y);
-                    int pix = 0xff000000 | ((averageXY[0] & 0xff) << 16) | ((averageXY[1] & 0xff) << 8) | (averageXY[2] & 0xff);
-                    dst.setRGB(x, y, pix);
+        } else if (analysis == 1) {
+            if (anti_aliasing == 0) {
+                int resizeType = -1;
+                int squareSide = 0;
+                int side1 = 0;
+                int side2 = 0;
+                if (dst.height() > dst.width()) {
+                    resizeType = 0; // Vertical
+                    int squareSideSrc = src.width();
+                    squareSide = dst.width();
+                    float ratio = (float) squareSide / squareSideSrc;
+
+                    side1 = (int) Math.floor((dst.height() - squareSide) / 2.0f);
+                    side2 = (int) Math.ceil((dst.height() - squareSide) / 2.0f);
+
+                    int side1src = (int) Math.floor((src.height() - squareSideSrc) / 2.0f);
+                    int side2src = (int) Math.ceil((src.height() - squareSideSrc) / 2.0f);
+
+                    for (int y = 0; y < dst.height(); y++) {
+                        for (int x = 0; x < dst.width(); x++) {
+                            if (y < side1) {
+                                int[] rgb = src.getRGB((int) Math.floor(x / scaleW), (int) Math.floor(y / ((float) side1 / side1src)));
+                                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
+                                dst.setRGB(x, y, pix);
+                            } else if (y > (side1 + squareSide)) {
+                                float scale3 = (float) side2 / side2src;
+                                int[] rgb = src.getRGB((int) Math.floor(x / scaleW), (int) Math.floor((y - side1 - squareSide) / scale3 + side1src + squareSideSrc));
+                                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
+                                dst.setRGB(x, y, pix);
+                            } else {
+                                int[] rgb = src.getRGB((int) Math.floor(x / ratio), (int) Math.floor((y - side1 + side1src) / ratio));
+                                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
+                                dst.setRGB(x, y, pix);
+                            }
+                        }
+                    }
+                } else {
+                    resizeType = 1; // Horizontal
+                    int squareSideSrc = src.height();
+                    squareSide = dst.height();
+                    float ratio = (float) squareSide / squareSideSrc;
+
+                    side1 = (int) Math.floor((dst.width() - squareSide) / 2.0f);
+                    side2 = (int) Math.ceil((dst.width() - squareSide) / 2.0f);
+
+                    int side1src = (int) Math.floor((src.width() - squareSideSrc) / 2.0f);
+                    int side2src = (int) Math.ceil((src.width() - squareSideSrc) / 2.0f);
+
+                    for (int y = 0; y < dst.height(); y++) {
+                        for (int x = 0; x < dst.width(); x++) {
+                            if (x < side1) {
+                                int[] rgb = src.getRGB((int) Math.floor(x / ((float) side1 / side1src)), (int) Math.floor(y / scaleH));
+                                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
+                                dst.setRGB(x, y, pix);
+                            } else if (x > (side1 + squareSide)) {
+                                float scale3 = (float) side2 / side2src;
+                                int[] rgb = src.getRGB((int) Math.floor((x - side1 - squareSide) / scale3 + side1src + squareSideSrc), (int) Math.floor(y / scaleH));
+                                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
+                                dst.setRGB(x, y, pix);
+                            } else {
+                                int[] rgb = src.getRGB((int) Math.floor((x - side1 + side1src) / ratio), (int) Math.floor(y / ratio));
+                                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
+                                dst.setRGB(x, y, pix);
+                            }
+
+                        }
+                    }
+                }
+            } else {
+                int resizeType = -1;
+                int squareSide = 0;
+                int side1 = 0;
+                int side2 = 0;
+                if (dst.height() > dst.width()) {
+                    resizeType = 0; // Vertical
+                    int squareSideSrc = src.width();
+                    squareSide = dst.width();
+                    float ratio = (float) squareSide / squareSideSrc;
+
+                    side1 = (int) Math.floor((dst.height() - squareSide) / 2.0f);
+                    side2 = (int) Math.ceil((dst.height() - squareSide) / 2.0f);
+
+                    int side1src = (int) Math.floor((src.height() - squareSideSrc) / 2.0f);
+                    int side2src = (int) Math.ceil((src.height() - squareSideSrc) / 2.0f);
+
+                    for (int y = 0; y < dst.height(); y++) {
+                        for (int x = 0; x < dst.width(); x++) {
+                            if (y < side1) {
+                                int[] rgb = src.getAverageRGB((int) Math.floor(x / scaleW), (int) Math.floor(y / ((float) side1 / side1src)));
+                                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
+                                dst.setRGB(x, y, pix);
+                            } else if (y > (side1 + squareSide)) {
+                                float scale3 = (float) side2 / side2src;
+                                int[] rgb = src.getAverageRGB((int) Math.floor(x / scaleW), (int) Math.floor((y - side1 - squareSide) / scale3 + side1src + squareSideSrc));
+                                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
+                                dst.setRGB(x, y, pix);
+                            } else {
+                                int[] rgb = src.getAverageRGB((int) Math.floor(x / ratio), (int) Math.floor((y - side1 + side1src) / ratio));
+                                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
+                                dst.setRGB(x, y, pix);
+                            }
+                        }
+                    }
+                } else {
+                    resizeType = 1; // Horizontal
+                    int squareSideSrc = src.height();
+                    squareSide = dst.height();
+                    float ratio = (float) squareSide / squareSideSrc;
+
+                    side1 = (int) Math.floor((dst.width() - squareSide) / 2.0f);
+                    side2 = (int) Math.ceil((dst.width() - squareSide) / 2.0f);
+
+                    int side1src = (int) Math.floor((src.width() - squareSideSrc) / 2.0f);
+                    int side2src = (int) Math.ceil((src.width() - squareSideSrc) / 2.0f);
+
+                    for (int y = 0; y < dst.height(); y++) {
+                        for (int x = 0; x < dst.width(); x++) {
+                            if (x < side1) {
+                                int[] rgb = src.getAverageRGB((int) Math.floor(x / ((float) side1 / side1src)), (int) Math.floor(y / scaleH));
+                                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
+                                dst.setRGB(x, y, pix);
+                            } else if (x > (side1 + squareSide)) {
+                                float scale3 = (float) side2 / side2src;
+                                int[] rgb = src.getAverageRGB((int) Math.floor((x - side1 - squareSide) / scale3 + side1src + squareSideSrc), (int) Math.floor(y / scaleH));
+                                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
+                                dst.setRGB(x, y, pix);
+                            } else {
+                                int[] rgb = src.getAverageRGB((int) Math.floor((x - side1 + side1src) / ratio), (int) Math.floor(y / ratio));
+                                int pix = 0xff000000 | ((rgb[0] & 0xff) << 16) | ((rgb[1] & 0xff) << 8) | (rgb[2] & 0xff);
+                                dst.setRGB(x, y, pix);
+                            }
+
+                        }
+                    }
                 }
             }
         }

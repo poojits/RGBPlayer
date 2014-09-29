@@ -15,15 +15,30 @@ public class RGBPlayer {
         GUI gui = new GUI();
         int original_width = 352;
         int original_height = 288;
+        int modified_width = original_width;
+        int modified_height = original_height;
+        boolean isScaled = false;
+        if(scaleW != 1.0 || scaleH != 1.0) {
+            modified_width = (int) Math.floor(scaleW * original_width);
+            modified_height = (int) Math.floor(scaleH * original_height);
+            isScaled = true;
+        }
         VideoCapture cap = new VideoCapture(filename, original_width, original_height);
         Image original_frame = new Image(original_width, original_height, BufferedImage.TYPE_INT_RGB);
+        Image modified_frame = new Image(modified_width, modified_height, BufferedImage.TYPE_INT_RGB);
         cap.open();
         if (!cap.isOpened()) {
             System.err.println("Cannot start VideoCapture: " + filename);
             System.exit(1);
         }
         while (cap.read(original_frame)) {
-            gui.imshow(original_frame);
+            if(isScaled) {
+                Image.resize(original_frame,modified_frame,scaleW,scaleH);
+                gui.imshow(modified_frame);
+            }
+            else {
+                gui.imshow(original_frame);
+            }
             try {
                 long sleep = (long) Math.floor((double) 1000 / fps);
                 Thread.sleep(sleep);

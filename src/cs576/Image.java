@@ -8,7 +8,7 @@ import java.io.*;
 /**
  * Created by poojit on 9/28/14.
  */
-public class Image{
+public class Image {
     private int height;
     private int width;
     private int colorModel;
@@ -20,13 +20,20 @@ public class Image{
     private byte[] data;
     private BufferedImage img;
 
-    private void setBufferedImage(String filename){
-        this.img = new BufferedImage(this.width,this.height,this.colorModel);
+    public Image(String filename, int width, int height, int colorModel) {
+        this.width = width;
+        this.height = height;
+        this.colorModel = colorModel;
+        setBufferedImage(filename);
+    }
+
+    private void setBufferedImage(String filename) {
+        this.img = new BufferedImage(this.width, this.height, this.colorModel);
         try {
             File file = new File(filename);
             InputStream is = new FileInputStream(file);
 
-            this.length = (int)file.length();
+            this.length = (int) file.length();
             this.data = new byte[this.length];
 
             int offset = 0;
@@ -40,7 +47,7 @@ public class Image{
                     byte a = 0;
                     byte r = this.data[idx];
                     byte g = this.data[idx + this.height * this.width];
-                    byte b = this.data[idx + this.height * (this.width<<1)];
+                    byte b = this.data[idx + this.height * (this.width << 1)];
 
                     int pix = 0xff000000 | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
                     this.img.setRGB(x, y, pix);
@@ -54,18 +61,11 @@ public class Image{
         }
     }
 
-    public Image(String filename, int width, int height, int colorModel){
-        this.width = width;
-        this.height = height;
-        this.colorModel = colorModel;
-        setBufferedImage(filename);
-    }
-
-    public BufferedImage getImg(){
+    public BufferedImage getImg() {
         return this.img;
     }
 
-    public void imshow(){
+    public void imshow() {
         JFrame frame = new JFrame();
         JLabel label = new JLabel(new ImageIcon(this.img));
         frame.getContentPane().add(label, BorderLayout.CENTER);
@@ -73,7 +73,7 @@ public class Image{
         frame.setVisible(true);
     }
 
-    public void imshow(JFrame frame){
+    public void imshow(JFrame frame) {
         JLabel label = new JLabel(new ImageIcon(img));
         frame.getContentPane().add(label, BorderLayout.CENTER);
         frame.pack();

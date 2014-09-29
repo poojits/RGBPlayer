@@ -1,9 +1,6 @@
 package cs576;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
 
 
 public class App {
@@ -12,7 +9,7 @@ public class App {
         int width = Integer.parseInt(args[1]);
         int height = Integer.parseInt(args[2]);
 
-        Image img = new Image(filename,width, height, BufferedImage.TYPE_INT_RGB);
+        Image img = new Image(filename, width, height, BufferedImage.TYPE_INT_RGB);
         img.imshow();
     }
 }
